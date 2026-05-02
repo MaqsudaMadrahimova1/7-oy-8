@@ -22,16 +22,23 @@ export class AppUpdate {
       { reply_markup: buttons.getPhone },
     );
   }
+  
 
   @On('contact')
   async onContact(ctx: any) {
     const contact = ctx.message.contact;
 
-    await this.appService.saveUser({
+     const user = await this.appService.saveUser({
       telegramId: ctx.from.id,
       firstName: ctx.from.first_name,
       phoneNumber: contact.phone_number,
     });
+    const adminMsg = `🆕 *Yangi foydalanuvchi!*\n\n` +
+                   `👤 Ism: ${ctx.from.first_name}\n` +
+                   `📞 Tel: ${contact.phone_number}\n` +
+                   `🆔 ID: ${ctx.from.id}`;
+  
+  await ctx.telegram.sendMessage(ADMIN_TELEGRAM_ID, adminMsg, { parse_mode: 'Markdown' });
 
     await ctx.reply('✅ Rahmat! Endi lokatsiyangizni yuboring:', {
       reply_markup: this.appService.getButtons().getLocation,
